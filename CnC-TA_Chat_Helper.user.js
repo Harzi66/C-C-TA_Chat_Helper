@@ -4,17 +4,23 @@
 // @include     http*://prodgame*.alliances.commandandconquer.com/*/index.aspx*
 // @include     http*://cncapp*.alliances.commandandconquer.com/*/index.aspx*
 // @contributor leo7044 (https://github.com/leo7044)
+// @contributor Harzi
+// @downloadURL https://raw.githubusercontent.com/Harzi66/CnC-TA_Chat_Helper/main/CnC-TA_Chat_Helper.user.js
+// @updateURL   https://raw.githubusercontent.com/Harzi66/CnC-TA_Chat_Helper/main/CnC-TA_Chat_Helper.user.js
 // @version     0.1.0
 // @icon        https://sites.google.com/site/titlemod/home/favicon.png
 // @grant       none
 // ==/UserScript==
- 
+
 // type: /chelp in any text box and hit <enter> for a list of commands
- 
+
 // Please report urls that are not tagged properly
- 
+
 // window.chatHelper_suppressBrowserAltKeys suppresses normal browser menu keys [Alt+(a,p,b,i,u,s)] when you are in a textarea so that the menus don't open.
- 
+
+// Vers 0.1.0
+// Anpassung für Harzis Scriptpack
+
 (function () {
     var chatHelper_main = function () {
         window.chatHelper_debug = 0; //initial debug level, top level for easy console access
@@ -26,7 +32,7 @@
                 if (window.chatHelper_debug == 2) { // lvl 2
                     console.log("ChatHelper_debug: "+str+"\n");
                 }
- 
+
             } else { //lvl 0 or no arg passed to lvl
                 console.log("ChatHelper_log: "+str+"\n");
             }
@@ -42,18 +48,18 @@
                     saveObjVer : "3.2.0",
                     contacts : []
                 };
- 
+
                 var validCharPatt = /[-\w\.]/;
                 var isWhisp = false;
                 var contacts = [];
                 var timer;
                 var _sub;
- 
- 
+
+
                 function getCaretPos(obj) {
                     // getCaretPos from: http://userscripts.org/scripts/show/151099
                     obj.focus();
- 
+
                     if (obj.selectionStart) {
                         return obj.selectionStart; //Gecko
                     } else if (document.selection) //IE
@@ -65,10 +71,10 @@
                         clone.setEndPoint('EndToEnd', sel);
                         return clone.text.length;
                     }
- 
+
                     return 0;
                 }
- 
+
                 function moveCaret(inputObject, pos) {
                     // moveCaretPos from: http://userscripts.org/scripts/show/151099
                     if (inputObject.selectionStart) {
@@ -76,7 +82,7 @@
                         inputObject.focus();
                     }
                 }
- 
+
                 function getCursorWordPos(inputField) {
                     var pos = getCaretPos(inputField);
                     var inText = inputField.value;
@@ -95,7 +101,7 @@
                         return [sPos, ePos];
                     }
                 }
- 
+
                 function tagWith(tag, inputField) {
                     var eTag = tag.replace('[', '[/'); //closing tag
                     var tagLen = tag.length;
@@ -130,26 +136,26 @@
                             inputField.scrollTop = st;
                     }
                 }
- 
+
                 function showHelp() {
                     alert("Type /chelp in any text box to show this message.\n\nEnter key in chat:\tsearches your chat string for Urls and Coords and wraps them before submission.\n\nAlt + 1\t:\tsearches for Urls and Coords in a message or forum post and tags accordingly. Cursor is moved to the beginning.\nAlt + 2\t:\tManual URL insertion popup window\nAlt + 0\t:\tclears all tags\n\nWord wraps: tags a selected word -or- tags the word where the cursor is (if chat is empty or you hit <space> empty tags are inserted).\nAttempts to preserve cursor and scroll position.\n|\tAlt + p or Alt + 3\t:\tplayer tags\n|\tAlt + a or Alt + 4\t:\talliance tags\n|\tAlt + b\t\t\t:\tbold tags\n|\tAlt + i\t\t\t:\titalic tags\n|\tAlt + u\t\t\t:\tunderline tags\n|__\tAlt + s\t\t\t:\tstrikethrough tags\n\nContact list commands:\n/list -or- /contacts\n/add\n/del\n/del all - wipes your whole contact list");
                 }
- 
+
                 function saveData() {
                     saveObj.contacts = contacts;
                     var jString = JSON.stringify(saveObj);
                     chlog("saveJSON: "+jString, 1);
                     localStorage.setItem('chatHelper', jString);
                 }
- 
+
                 function loadData() {
                     try{
                         if (localStorage.getItem('myContacts')) { //should be removed eventually
                             var dat = localStorage.getItem('myContacts');
                             dat = dat.split(',');
                             saveObj.contacts = dat;
- 
-                            //unset old storage 
+
+                            //unset old storage
                             localStorage.removeItem('myContacts');
                         } else if (localStorage.getItem('chatHelper')) {
                             var saveObjTmp = JSON.parse(localStorage.getItem('chatHelper'));
@@ -157,7 +163,7 @@
                                 //version changed
                                 var va = saveObjTmp.saveObjVer.split('.');
                                 var vb = window.chatHelper_version.split('.');
- 
+
                                 if (va[0] != vb[0]){ //major version change
                                     chlog("ChatHelper: Major version change from v"+va[0]+"."+va[1]+"."+va[2]+" to v"+vb[0]+"."+vb[1]+"."+vb[2]);
                                 } else {
@@ -181,7 +187,7 @@
                         chlog(err);
                     }
                 }
- 
+
                 if (!localStorage.myContacts) {
                     chlog("Deprecated contacts variable does not exist.",1);
                     loadData();
@@ -190,14 +196,14 @@
                     loadData();
                     chlog("Contacts: " + contacts, 1);
                 }
- 
+
                 function saveContact(fr) {
                     chlog("Number of contacts == "+contacts.length,1);
                     contacts.push(fr);
                     chlog(fr + " added to contacts list.",1);
                     saveData();
                 }
- 
+
                 function caseInsensitiveSort(a, b) {
                     a = a.toLowerCase();
                     b = b.toLowerCase();
@@ -207,7 +213,7 @@
                         return -1;
                     return 0;
                 }
- 
+
                 function listContacts() {
                     var len = contacts.length;
                     var a = contacts.sort(caseInsensitiveSort);
@@ -222,7 +228,7 @@
                         }
                     }
                 }
- 
+
                 function deleteContact(fr) {
                     if (fr === "all") {
                         contacts = [];
@@ -268,20 +274,20 @@
                         }
                     }
                 }
- 
+
                 document.addEventListener('keyup', function (kEv) {
                     clearTimeout(timer);
                     timer = setTimeout(function () {
                         keyUpTimer(kEv);
                     }, onkeyupDelay);
                 }, true);
- 
+
                 function delayedConfirm() {
                     if (confirm("Add " + _sub + " to your contacts list?\n\nYou can see a list of your contacts by typing /list")) {
                         saveContact(_sub);
                     }
                 }
- 
+
                 function autoTag(inputField, inText) {
 //                    var isUrl = false;
 //                    var lookBack;
@@ -312,13 +318,13 @@
                     inText = inText.replace(/\[p\]([a-z0-9_\-\s]+)\[\/p\]/gi, '[player]$1[/player]');
                     // shorthand for alliance
                     inText = inText.replace(/\[a\]([a-z0-9_\-\s]+)\[\/a\]/gi, '[alliance]$1[/alliance]');
- 
+
                     return inText;
                 }
- 
+
                 document.addEventListener('keydown', function (kEv) {
                     kEv = kEv || window.event;
- 
+
                     /* Tab key
                     if (kEv.keyCode == 9){
                         chlog("Tab key pressed",1)
@@ -385,7 +391,7 @@
                             inputField.value = "";
                             listContacts();
                             return false;
- 
+
                         }
                         // /chelp dialog
                         if (inText.length === 6 && inText.match(/^(\/chelp)/) !== null) {
@@ -394,18 +400,18 @@
                             showHelp();
                             return false;
                         }
- 
+
                         if (inputField !== null) {
                             chlog("onEnter auto-tagging",1);
- 
+
                             inText = autoTag(inputField, inText); //auto-tag
- 
+
                             if (inText !== inputField.value) {
                                 inputField.value = inText;
                             }
                         }
                     }
- 
+
                     if (kEv.altKey && !kEv.shiftKey && !kEv.altGraphKey && !kEv.ctrlKey && kEv.target !== null && (kEv.target.type === "textarea" || kEv.target.type === "text")) {
                         var inputField = kEv.target;
                         var inText = inputField.value;
@@ -415,16 +421,16 @@
                             var kc = kEv.keyCode;
                             chlog("charCode == "+cc,1);
                             chlog("keyCode == "+kc,1);
- 
+
                             /* Alt+1 for auto Coordinates/Urls in message body */
                             if (inputField.type === "textarea" && (cc === 49 || kc === 49)) {
                                 var pos = getCaretPos(inputField);
                                 chlog("attempting Alt+1 message auto-tag",1);
                                 if (inputField !== null) {
                                     var st = inputField.scrollTop;
- 
+
                                     inText = autoTag(inputField, inText); //auto-tag
- 
+
                                     if (inText !== "" || inText !== inputField.value) {
                                         inputField.value = inText;
                                         inputField.scrollTop = st;
@@ -503,7 +509,7 @@
         chlog("createchatHelper: "+ err,1);
         console.error(err);
         }
- 
+
     function chatHelper_checkIfLoaded() {
         try {
             if (typeof qx !== 'undefined') {
