@@ -5,8 +5,8 @@
 // @include     http*://cncapp*.alliances.commandandconquer.com/*/index.aspx*
 // @contributor leo7044 (https://github.com/leo7044)
 // @contributor Harzi
-// @downloadURL https://raw.githubusercontent.com/Harzi66/CnC-TA_Chat_Helper/main/CnC-TA_Chat_Helper.user.js
-// @updateURL   https://raw.githubusercontent.com/Harzi66/CnC-TA_Chat_Helper/main/CnC-TA_Chat_Helper.user.js
+// @downloadURL https://raw.githubusercontent.com/Harzi66/C-C-TA_Chat_Helper/main/CnC-TA_Chat_Helper.user.js
+// @updateURL   https://raw.githubusercontent.com/Harzi66/C-C-TA_Chat_Helper/main/CnC-TA_Chat_Helper.user.js
 // @version     0.1.0
 // @icon        https://sites.google.com/site/titlemod/home/favicon.png
 // @grant       none
